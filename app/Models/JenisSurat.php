@@ -7,5 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class JenisSurat extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'nama_jenis',
+    ];
+
+    public function suratMasuks()
+{
+    return $this->hasMany(SuratMasuk::class);
+}
 }

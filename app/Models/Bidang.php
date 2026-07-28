@@ -7,5 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Bidang extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'nama_bidang',
+    ];
+
+    public function users()
+{
+    return $this->hasMany(User::class);
+}
 }

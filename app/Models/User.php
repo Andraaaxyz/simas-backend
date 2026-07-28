@@ -18,10 +18,23 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'role_id',
+        'bidang_id',
+        'nama',
+        'nip',
         'email',
+        'username',
         'password',
+        'status',
     ];
+
+    public function role() {
+    return $this->belongsTo(Role::class);
+    }
+
+    public function bidang() {
+    return $this->belongsTo(Bidang::class);
+    }
 
     /**
      * The attributes that should be hidden for serialization.

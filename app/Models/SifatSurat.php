@@ -7,5 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class SifatSurat extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'nama_sifat',
+    ];
+
+    public function suratMasuks()
+{
+    return $this->hasMany(SuratMasuk::class);
+}
 }
