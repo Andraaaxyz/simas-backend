@@ -55,4 +55,22 @@ class AuthController extends Controller
             'message' => 'Logout berhasil'
         ]);
     }
+
+    public function me()
+{
+    $user = auth()->user()->load(['role', 'bidang']);
+
+    return response()->json([
+        'success' => true,
+        'user' => [
+            'id' => $user->id,
+            'nama' => $user->nama,
+            'username' => $user->username,
+            'email' => $user->email,
+            'role' => $user->role->nama_role,
+            'bidang' => $user->bidang->nama_bidang,
+            'status' => $user->status,
+        ]
+    ]);
+}
 }
