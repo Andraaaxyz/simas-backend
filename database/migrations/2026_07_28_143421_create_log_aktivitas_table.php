@@ -12,8 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('log_aktivitas', function (Blueprint $table) {
+    
             $table->id();
-            $table->timestamps();
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            $table->string('aktivitas');
+            $table->string('ip_address')->nullable();
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 

@@ -12,7 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('arsip_digitals', function (Blueprint $table) {
+    
             $table->id();
+            $table->foreignId('surat_masuk_id')
+                ->constrained('surat_masuks')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+            $table->string('nama_file');
+            $table->string('path_file');
+            $table->string('ukuran_file')->nullable();
             $table->timestamps();
         });
     }

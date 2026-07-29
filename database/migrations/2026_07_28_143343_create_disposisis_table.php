@@ -12,7 +12,35 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('disposisis', function (Blueprint $table) {
+    
             $table->id();
+    
+            $table->foreignId('surat_masuk_id')
+                ->constrained('surat_masuks')
+                ->cascadeOnUpdate()
+                ->cascadeOnDelete();
+    
+            $table->foreignId('dari_user')
+                ->constrained('users')
+                ->cascadeOnUpdate()
+                ->restrictOnDelete();
+    
+            $table->foreignId('kepada_user')
+                ->constrained('users')
+                ->cascadeOnUpdate()
+                ->restrictOnDelete();
+    
+            $table->date('tanggal_disposisi');
+            $table->text('instruksi');
+            $table->text('catatan')->nullable();
+            $table->enum('status', [
+                'menunggu',
+                'dibaca',
+                'diproses',
+                'selesai'
+            ])->default('menunggu');
+            $table->timestamp('dibaca_at')->nullable();
+            $table->timestamp('selesai_at')->nullable();
             $table->timestamps();
         });
     }

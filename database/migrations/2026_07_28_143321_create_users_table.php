@@ -13,18 +13,28 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+    
+            $table->foreignId('role_id')
+                ->constrained('roles')
+                ->cascadeOnUpdate()
+                ->restrictOnDelete();
+    
+            $table->foreignId('bidang_id')
+                ->constrained('bidangs')
+                ->cascadeOnUpdate()
+                ->restrictOnDelete();
+    
+            $table->string('nama');
+            $table->string('nip', 30)->unique();
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('username', 50)->unique();
             $table->string('password');
+            $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
             $table->rememberToken();
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
+    
     public function down(): void
     {
         Schema::dropIfExists('users');
