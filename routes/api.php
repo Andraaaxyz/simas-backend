@@ -10,6 +10,7 @@ use App\Http\Controllers\Surat\SuratMasukController;
 use App\Http\Controllers\Surat\DisposisiController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Surat\ArsipDigitalController;
+use App\Http\Controllers\Dashboard\DashboardController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -36,4 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/arsip-digital', [ArsipDigitalController::class, 'store']);
     Route::get('/arsip-digital/{arsipDigital}/download', [ArsipDigitalController::class, 'download']);
     Route::delete('/arsip-digital/{arsipDigital}', [ArsipDigitalController::class, 'destroy']); 
+
+    //dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index']);
 });
