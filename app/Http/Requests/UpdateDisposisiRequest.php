@@ -15,7 +15,6 @@ class UpdateDisposisiRequest extends FormRequest
     {
         return [
             'surat_masuk_id' => 'sometimes|exists:surat_masuks,id',
-            'dari_user' => 'sometimes|exists:users,id',
             'kepada_user' => 'sometimes|exists:users,id',
             'tanggal_disposisi' => 'sometimes|date',
             'instruksi' => 'sometimes|string',

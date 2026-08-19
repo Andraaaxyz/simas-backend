@@ -27,4 +27,5 @@ Route::middleware('auth:sanctum')->group(function () {
     //persuratan
     Route::apiResource('surat-masuk', SuratMasukController::class);
     Route::apiResource('disposisi', DisposisiController::class);
+    Route::put('/disposisi/{disposisi}', [DisposisiController::class, 'update']);
 });

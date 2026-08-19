@@ -69,9 +69,25 @@ class DisposisiController extends Controller
         Disposisi $disposisi
     ) {
         $data = $request->validated();
-
+    
+        if (
+            isset($data['status']) &&
+            $data['status'] === 'dibaca' &&
+            !$disposisi->dibaca_at
+        ) {
+            $data['dibaca_at'] = now();
+        }
+    
+        if (
+            isset($data['status']) &&
+            $data['status'] === 'selesai' &&
+            !$disposisi->selesai_at
+        ) {
+            $data['selesai_at'] = now();
+        }
+    
         $disposisi->update($data);
-
+    
         return response()->json([
             'success' => true,
             'message' => 'Disposisi berhasil diperbarui',
@@ -82,7 +98,7 @@ class DisposisiController extends Controller
             ])
         ]);
     }
-
+    
     // Menghapus disposisi
     public function destroy(Disposisi $disposisi)
     {
