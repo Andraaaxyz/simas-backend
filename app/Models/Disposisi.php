@@ -15,6 +15,8 @@ class Disposisi extends Model
         'catatan',
         'status',
         'tanggal_disposisi',
+        'dibaca_at',
+        'selesai_at',
     ];
 
     public function suratMasuk()

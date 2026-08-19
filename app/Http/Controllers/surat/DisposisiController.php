@@ -68,6 +68,14 @@ class DisposisiController extends Controller
         UpdateDisposisiRequest $request,
         Disposisi $disposisi
     ) {
+        // Hanya penerima disposisi yang boleh mengubah
+        if ($disposisi->kepada_user !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki akses untuk mengubah disposisi ini'
+            ], 403);
+        }
+    
         $data = $request->validated();
     
         if (
@@ -98,7 +106,7 @@ class DisposisiController extends Controller
             ])
         ]);
     }
-    
+
     // Menghapus disposisi
     public function destroy(Disposisi $disposisi)
     {
