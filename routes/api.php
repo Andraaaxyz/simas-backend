@@ -11,6 +11,7 @@ use App\Http\Controllers\Surat\DisposisiController;
 use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Surat\ArsipDigitalController;
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Notifikasi\NotifikasiController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -40,4 +41,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //dashboard
     Route::get('/dashboard', [DashboardController::class, 'index']);
+
+    //notifikasi
+    Route::get('/notifikasi', [NotifikasiController::class, 'index']);
+    Route::get('/notifikasi/unread', [NotifikasiController::class, 'unread']);
+    Route::put('/notifikasi/{notifikasi}/read', [NotifikasiController::class, 'read']);
 });

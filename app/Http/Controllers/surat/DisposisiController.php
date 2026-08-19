@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Surat;
 use App\Http\Controllers\Controller;
 use App\Models\Disposisi;
 use App\Models\SuratMasuk;
+use App\Models\Notifikasi;
 use App\Http\Requests\StoreDisposisiRequest;
 use App\Http\Requests\UpdateDisposisiRequest;
 use Illuminate\Http\Request;
@@ -51,6 +52,14 @@ class DisposisiController extends Controller
         $data['dari_user'] = auth()->id();
     
         $disposisi = Disposisi::create($data);
+
+        Notifikasi::create([
+            'user_id' => $disposisi->kepada_user,
+            'judul' => 'Disposisi Baru',
+            'pesan' => 'Anda menerima disposisi baru untuk surat nomor '
+                . $disposisi->suratMasuk->no_surat,
+            'is_read' => false,
+        ]);
     
         return response()->json([
             'success' => true,
