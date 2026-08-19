@@ -9,6 +9,7 @@ use App\Http\Controllers\Master\JenisSuratController;
 use App\Http\Controllers\Surat\SuratMasukController;
 use App\Http\Controllers\Surat\DisposisiController;
 use App\Http\Controllers\Master\UserController;
+use App\Http\Controllers\Surat\ArsipDigitalController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -28,4 +29,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('surat-masuk', SuratMasukController::class);
     Route::apiResource('disposisi', DisposisiController::class);
     Route::put('/disposisi/{disposisi}', [DisposisiController::class, 'update']);
+
+    //arsip
+    Route::get('/arsip-digital', [ArsipDigitalController::class, 'index']);
+    Route::get('/arsip-digital/{arsipDigital}', [ArsipDigitalController::class, 'show']);
+    Route::post('/arsip-digital', [ArsipDigitalController::class, 'store']);
+    Route::get('/arsip-digital/{arsipDigital}/download', [ArsipDigitalController::class, 'download']);
+    Route::delete('/arsip-digital/{arsipDigital}', [ArsipDigitalController::class, 'destroy']); 
 });
