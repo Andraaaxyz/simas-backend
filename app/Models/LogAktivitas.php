@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class LogAktivitas extends Model
 {
+    use HasFactory;
+
+    public $timestamps = false;
+
     protected $fillable = [
         'user_id',
         'aktivitas',
@@ -14,7 +18,7 @@ class LogAktivitas extends Model
     ];
 
     public function user()
-{
-    return $this->belongsTo(User::class);
-}
+    {
+        return $this->belongsTo(User::class);
+    }
 }

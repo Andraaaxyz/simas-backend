@@ -12,6 +12,7 @@ use App\Http\Controllers\Master\UserController;
 use App\Http\Controllers\Surat\ArsipDigitalController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Notifikasi\NotifikasiController;
+use App\Http\Controllers\Laporan\LogAktivitasController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -46,4 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifikasi', [NotifikasiController::class, 'index']);
     Route::get('/notifikasi/unread', [NotifikasiController::class, 'unread']);
     Route::put('/notifikasi/{notifikasi}/read', [NotifikasiController::class, 'read']);
+
+    //log aktifitas
+    Route::get('/log-aktivitas', [LogAktivitasController::class, 'index']);
 });

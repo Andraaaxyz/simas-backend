@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Master;
 
+use App\Services\LogAktivitasService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreUserRequest;
@@ -37,12 +38,19 @@ class UserController extends Controller
     }
 
     // Menambahkan user
-    public function store(StoreUserRequest $request)
-    {
+    public function store(
+        StoreUserRequest $request,
+        LogAktivitasService $logService
+    ) {
         $data = $request->validated();
-
+    
         $user = User::create($data);
-
+    
+        $logService->catat(
+            'Menambahkan user "' . $user->nama . '"',
+            $request
+        );
+    
         return response()->json([
             'success' => true,
             'message' => 'User berhasil ditambahkan',
@@ -67,6 +75,11 @@ class UserController extends Controller
 
         $user->update($data);
 
+        $logService->catat(
+            'Mengubah user "' . $user->nama . '"',
+            $request
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'User berhasil diperbarui',
@@ -81,6 +94,13 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         $user->delete();
+
+        $nama = $user->nama;
+
+        $logService->catat(
+        'Menghapus user "' . $nama . '"',
+        $request
+        );
 
         return response()->json([
             'success' => true,

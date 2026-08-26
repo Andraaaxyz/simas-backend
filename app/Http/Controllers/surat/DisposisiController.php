@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Surat;
 
+use App\Services\LogAktivitasService;
 use App\Http\Controllers\Controller;
 use App\Models\Disposisi;
 use App\Models\SuratMasuk;
@@ -60,6 +61,11 @@ class DisposisiController extends Controller
                 . $disposisi->suratMasuk->no_surat,
             'is_read' => false,
         ]);
+
+        $logService->catat(
+            'Membuat disposisi untuk surat #' . $disposisi->surat_masuk_id,
+            $request
+        );
     
         return response()->json([
             'success' => true,
@@ -73,12 +79,12 @@ class DisposisiController extends Controller
     }
 
     // Mengupdate disposisi
-    public function update(
-        UpdateDisposisiRequest $request,
-        Disposisi $disposisi
+    public function update(UpdateDisposisiRequest $request,Disposisi $disposisi,LogAktivitasService $logService
     ) {
-        // Hanya penerima disposisi yang boleh mengubah
-        if ($disposisi->kepada_user !== auth()->id()) {
+        if (
+            $disposisi->kepada_user !== auth()->id() &&
+            auth()->user()->role?->nama_role !== 'Admin'
+        ) {
             return response()->json([
                 'success' => false,
                 'message' => 'Anda tidak memiliki akses untuk mengubah disposisi ini'
@@ -104,6 +110,12 @@ class DisposisiController extends Controller
         }
     
         $disposisi->update($data);
+    
+        $logService->catat(
+            'Mengubah status disposisi #' . $disposisi->id .
+            ' menjadi ' . $disposisi->status,
+            $request
+        );
     
         return response()->json([
             'success' => true,

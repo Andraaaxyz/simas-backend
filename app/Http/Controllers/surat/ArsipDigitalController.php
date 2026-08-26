@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Surat;
 
+use App\Services\LogAktivitasService;
 use App\Http\Requests\StoreArsipDigitalRequest;
 use App\Models\ArsipDigital;
 use Illuminate\Support\Facades\Storage;
@@ -30,24 +31,28 @@ class ArsipDigitalController extends Controller
         ]);
     }
 
-    public function store(StoreArsipDigitalRequest $request)
-    {
+    public function store(StoreArsipDigitalRequest $request, LogAktivitasService $logService) {
         $data = $request->validated();
-
+    
         $file = $request->file('file');
-
+    
         $path = $file->store('arsip-digital', 'public');
-
+    
         $arsip = ArsipDigital::create([
             'surat_masuk_id' => $data['surat_masuk_id'],
             'nama_file' => $file->getClientOriginalName(),
             'path_file' => $path,
             'ukuran_file' => $file->getSize(),
         ]);
-
+    
+        $logService->catat(
+            'Mengupload arsip untuk surat  #' . $arsip->surat_masuk_id,
+            $request
+        );
+    
         return response()->json([
             'success' => true,
-            'message' => 'Arsip digital berhasil ditambahkan',
+            'message' => 'Arsip berhasil ditambahkan',
             'data' => $arsip->load('suratMasuk')
         ], 201);
     }
@@ -68,20 +73,28 @@ class ArsipDigitalController extends Controller
             );
     }
 
-    public function destroy(ArsipDigital $arsipDigital)
-    {
+    public function destroy(ArsipDigital $arsipDigital, LogAktivitasService $logService) {
+        $suratMasukId = $arsipDigital->surat_masuk_id;
+        $namaFile = $arsipDigital->nama_file;
+    
         if (
             $arsipDigital->path_file &&
             Storage::disk('public')->exists($arsipDigital->path_file)
         ) {
             Storage::disk('public')->delete($arsipDigital->path_file);
         }
-
+    
         $arsipDigital->delete();
-
+    
+        $logService->catat(
+            'Menghapus arsip "' . $namaFile .
+            '" dari surat masuk #' . $suratMasukId,
+            request()
+        );
+    
         return response()->json([
             'success' => true,
-            'message' => 'Arsip digital berhasil dihapus'
+            'message' => 'Arsip berhasil dihapus'
         ]);
     }
 }

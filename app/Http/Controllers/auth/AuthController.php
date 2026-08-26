@@ -6,10 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Services\LogAktivitasService;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
-    public function login(LoginRequest $request)
+   public function login(
+    LoginRequest $request,
+    LogAktivitasService $logService
+)
     {
         $user = User::with(['role', 'bidang'])
             ->where('username', $request->username)
@@ -31,6 +36,11 @@ class AuthController extends Controller
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
+        $logService->catat(
+            'Login ke sistem',
+            $request
+        );
+
         return response()->json([
             'success' => true,
             'message' => 'Login berhasil',
@@ -46,10 +56,17 @@ class AuthController extends Controller
         ]);
     }
 
-    public function logout()
-    {
+    public function logout(
+        Request $request,
+        LogAktivitasService $logService
+    ) {
+        $logService->catat(
+            'Logout dari sistem',
+            $request
+        );
+    
         auth()->user()->currentAccessToken()->delete();
-
+    
         return response()->json([
             'success' => true,
             'message' => 'Logout berhasil'

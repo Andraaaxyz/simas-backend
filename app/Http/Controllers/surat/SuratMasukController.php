@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Surat;
 
 use Illuminate\Http\Request;
+use App\Services\LogAktivitasService;
 use App\Http\Controllers\Controller;
 use App\Models\SuratMasuk;
 use App\Http\Requests\StoreSuratMasukRequest;
@@ -49,27 +50,33 @@ class SuratMasukController extends Controller
             'data' => $surat
         ]);
     }
-    public function store(StoreSuratMasukRequest $request)
-    {
+    public function store(StoreSuratMasukRequest $request, LogAktivitasService $logService) {
         $data = $request->validated();
     
         $data['created_by'] = auth()->id();
     
         if ($request->hasFile('file_surat')) {
-    
             $data['file_surat'] = $request
                 ->file('file_surat')
                 ->store('surat-masuk', 'public');
-    
         }
     
         $surat = SuratMasuk::create($data);
     
+        $logService->catat(
+            'Menambahkan surat masuk nomor "' . $surat->no_surat . '"',
+            $request
+        );
+    
         return response()->json([
             'success' => true,
             'message' => 'Surat masuk berhasil ditambahkan',
-            'data' => $surat
-        ],201);
+            'data' => $surat->load([
+                'jenisSurat',
+                'sifatSurat',
+                'creator'
+            ])
+        ], 201);
     }
 
     public function show(SuratMasuk $surat_masuk)
@@ -84,38 +91,44 @@ class SuratMasukController extends Controller
         ]);
     }
 
-    public function update(UpdateSuratMasukRequest $request, SuratMasuk $surat_masuk)
-{
-    $data = $request->validated();
-
-    if ($request->hasFile('file_surat')) {
-
-        if ($surat_masuk->file_surat &&
-            Storage::disk('public')->exists($surat_masuk->file_surat)) {
-
-            Storage::disk('public')->delete($surat_masuk->file_surat);
+    public function update(UpdateSuratMasukRequest $request, SuratMasuk $surat_masuk, LogAktivitasService $logService) {
+        $data = $request->validated();
+    
+        if ($request->hasFile('file_surat')) {
+    
+            if (
+                $surat_masuk->file_surat &&
+                Storage::disk('public')->exists($surat_masuk->file_surat)
+            ) {
+                Storage::disk('public')->delete($surat_masuk->file_surat);
+            }
+    
+            $data['file_surat'] = $request
+                ->file('file_surat')
+                ->store('surat-masuk', 'public');
         }
-
-        $data['file_surat'] = $request->file('file_surat')
-            ->store('surat-masuk', 'public');
+    
+        $surat_masuk->update($data);
+    
+        $logService->catat(
+            'Mengubah surat masuk nomor "' . $surat_masuk->no_surat . '"',
+            $request
+        );
+    
+        return response()->json([
+            'success' => true,
+            'message' => 'Surat masuk berhasil diperbarui',
+            'data' => $surat_masuk->fresh()->load([
+                'jenisSurat',
+                'sifatSurat',
+                'creator'
+            ])
+        ]);
     }
 
-    $surat_masuk->fill($data);
-    $surat_masuk->save();
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Surat masuk berhasil diperbarui',
-        'data' => $surat_masuk->fresh()->load([
-            'jenisSurat',
-            'sifatSurat',
-            'creator'
-        ])
-    ]);
-}
-
-    public function destroy(SuratMasuk $surat_masuk)
-    {
+    public function destroy(SuratMasuk $surat_masuk, LogAktivitasService $logService) {
+        $noSurat = $surat_masuk->no_surat;
+    
         if (
             $surat_masuk->file_surat &&
             Storage::disk('public')->exists($surat_masuk->file_surat)
@@ -124,6 +137,11 @@ class SuratMasukController extends Controller
         }
     
         $surat_masuk->delete();
+    
+        $logService->catat(
+            'Menghapus surat masuk nomor "' . $noSurat . '"',
+            request()
+        );
     
         return response()->json([
             'success' => true,
