@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Laporan;
+namespace App\Http\Controllers;
 
 use App\Models\SuratMasuk;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class LaporanController extends Controller
@@ -16,7 +15,7 @@ class LaporanController extends Controller
             'creator'
         ]);
 
-        // Filter tanggal mulai
+        // Filter tanggal awal
         if ($request->filled('tanggal_awal')) {
             $query->whereDate(
                 'tanggal_terima',
@@ -55,7 +54,7 @@ class LaporanController extends Controller
             );
         }
 
-        $surat = $query
+        $laporan = $query
             ->latest('tanggal_terima')
             ->paginate(20)
             ->withQueryString();
@@ -63,7 +62,7 @@ class LaporanController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Laporan surat masuk berhasil diambil',
-            'data' => $surat
+            'data' => $laporan
         ]);
     }
 }
