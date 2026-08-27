@@ -20,6 +20,9 @@ Route::middleware('auth:sanctum')->group(function () {
     //login dan logout 
     Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    //timeline
+    Route::get('/surat-masuk/{surat_masuk}/timeline', [SuratMasukController::class, 'timeline']);
     
     //master aplikasi
     Route::apiResource('bidangs', BidangController::class);
@@ -50,4 +53,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //log aktifitas
     Route::get('/log-aktivitas', [LogAktivitasController::class, 'index']);
+
 });

@@ -46,8 +46,9 @@ class ArsipDigitalController extends Controller
         ]);
     
         $logService->catat(
-            'Mengupload arsip untuk surat  #' . $arsip->surat_masuk_id,
-            $request
+            'Mengupload arsip "' . $arsip->nama_file . '"',
+            $request,
+            $arsip->surat_masuk_id
         );
     
         return response()->json([
@@ -87,9 +88,9 @@ class ArsipDigitalController extends Controller
         $arsipDigital->delete();
     
         $logService->catat(
-            'Menghapus arsip "' . $namaFile .
-            '" dari surat masuk #' . $suratMasukId,
-            request()
+            'Menghapus arsip "' . $namaFile . '"',
+            request(),
+            $suratMasukId
         );
     
         return response()->json([

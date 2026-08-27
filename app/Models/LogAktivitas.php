@@ -13,6 +13,7 @@ class LogAktivitas extends Model
 
     protected $fillable = [
         'user_id',
+        'surat_masuk_id',
         'aktivitas',
         'ip_address',
     ];
@@ -20,5 +21,10 @@ class LogAktivitas extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function suratMasuk()
+    {
+        return $this->belongsTo(SuratMasuk::class);
     }
 }

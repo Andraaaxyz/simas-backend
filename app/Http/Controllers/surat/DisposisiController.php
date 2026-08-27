@@ -13,6 +13,13 @@ use Illuminate\Http\Request;
 
 class DisposisiController extends Controller
 {
+    protected LogAktivitasService $logService;
+
+    public function __construct(LogAktivitasService $logService)
+    {
+    $this->logService = $logService;
+    }
+
     // Menampilkan semua disposisi
     public function index()
     {
@@ -46,14 +53,16 @@ class DisposisiController extends Controller
     }
 
     // Membuat disposisi
-    public function store(StoreDisposisiRequest $request)
-    {
+    public function store(
+        StoreDisposisiRequest $request,
+        LogAktivitasService $logService
+    ) {
         $data = $request->validated();
     
         $data['dari_user'] = auth()->id();
     
         $disposisi = Disposisi::create($data);
-
+    
         Notifikasi::create([
             'user_id' => $disposisi->kepada_user,
             'judul' => 'Disposisi Baru',
@@ -61,10 +70,13 @@ class DisposisiController extends Controller
                 . $disposisi->suratMasuk->no_surat,
             'is_read' => false,
         ]);
-
+    
+        // CATAT AKTIVITAS
         $logService->catat(
-            'Membuat disposisi untuk surat #' . $disposisi->surat_masuk_id,
-            $request
+            'Membuat disposisi untuk surat masuk #'
+                . $disposisi->surat_masuk_id,
+            $request,
+            $disposisi->surat_masuk_id
         );
     
         return response()->json([
@@ -75,12 +87,13 @@ class DisposisiController extends Controller
                 'pengirim',
                 'penerima'
             ])
-        ]);
+        ], 201);
     }
 
     // Mengupdate disposisi
-    public function update(UpdateDisposisiRequest $request,Disposisi $disposisi,LogAktivitasService $logService
-    ) {
+    public function update(UpdateDisposisiRequest $request, Disposisi $disposisi, LogAktivitasService $logService) {
+     { 
+    {
         if (
             $disposisi->kepada_user !== auth()->id() &&
             auth()->user()->role?->nama_role !== 'Admin'
@@ -111,10 +124,10 @@ class DisposisiController extends Controller
     
         $disposisi->update($data);
     
-        $logService->catat(
-            'Mengubah status disposisi #' . $disposisi->id .
-            ' menjadi ' . $disposisi->status,
-            $request
+        $this->logService->catat(
+            'Mengubah disposisi #' . $disposisi->id,
+            $request,
+            $disposisi->surat_masuk_id
         );
     
         return response()->json([
@@ -127,12 +140,25 @@ class DisposisiController extends Controller
             ])
         ]);
     }
+}
+    }
 
     // Menghapus disposisi
-    public function destroy(Disposisi $disposisi)
-    {
+    public function destroy(
+        Disposisi $disposisi,
+        LogAktivitasService $logService
+    ) {
+        $idDisposisi = $disposisi->id;
+        $idSurat = $disposisi->surat_masuk_id;
+    
         $disposisi->delete();
-
+    
+        $logService->catat(
+            'Menghapus disposisi #' . $idDisposisi,
+            request(),
+            $idSurat
+        );
+    
         return response()->json([
             'success' => true,
             'message' => 'Disposisi berhasil dihapus'
