@@ -13,6 +13,7 @@ use App\Http\Controllers\Surat\ArsipDigitalController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Notifikasi\NotifikasiController;
 use App\Http\Controllers\Laporan\LogAktivitasController;
+use App\Http\Controllers\Profile\ProfileController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -53,5 +54,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //log aktifitas
     Route::get('/log-aktivitas', [LogAktivitasController::class, 'index']);
+
+    //profile
+    Route::get('/profile', [ProfileController::class, 'show']);
+    Route::put('/profile', [ProfileController::class, 'update']);
 
 });
