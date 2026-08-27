@@ -14,6 +14,7 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Notifikasi\NotifikasiController;
 use App\Http\Controllers\Laporan\LogAktivitasController;
 use App\Http\Controllers\Profile\ProfileController;
+use App\Http\Controllers\Laporan\LaporanController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -52,8 +53,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifikasi/unread', [NotifikasiController::class, 'unread']);
     Route::put('/notifikasi/{notifikasi}/read', [NotifikasiController::class, 'read']);
 
-    //log aktifitas
+    //log aktifitas & laporan
     Route::get('/log-aktivitas', [LogAktivitasController::class, 'index']);
+    Route::get('/laporan/surat-masuk', [LaporanController::class, 'suratMasuk']);
 
     //profile
     Route::get('/profile', [ProfileController::class, 'show']);
