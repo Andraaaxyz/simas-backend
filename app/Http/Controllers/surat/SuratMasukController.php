@@ -2,17 +2,24 @@
 
 namespace App\Http\Controllers\Surat;
 
-use Illuminate\Http\Request;
-use App\Services\LogAktivitasService;
 use App\Http\Controllers\Controller;
-use App\Models\SuratMasuk;
-use App\Models\LogAktivitas;
 use App\Http\Requests\StoreSuratMasukRequest;
 use App\Http\Requests\UpdateSuratMasukRequest;
+use App\Models\LogAktivitas;
+use App\Models\SuratMasuk;
+use App\Services\LogAktivitasService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class SuratMasukController extends Controller
 {
+    protected LogAktivitasService $logService;
+
+    public function __construct(LogAktivitasService $logService)
+    {
+        $this->logService = $logService;
+    }
+
     // =========================
     // MENAMPILKAN SEMUA SURAT
     // =========================
@@ -21,7 +28,7 @@ class SuratMasukController extends Controller
         $query = SuratMasuk::with([
             'jenisSurat',
             'sifatSurat',
-            'creator'
+            'creator',
         ]);
 
         // Search
@@ -30,9 +37,9 @@ class SuratMasukController extends Controller
 
             $query->where(function ($q) use ($search) {
                 $q->where('no_surat', 'like', "%{$search}%")
-                  ->orWhere('no_agenda', 'like', "%{$search}%")
-                  ->orWhere('asal_surat', 'like', "%{$search}%")
-                  ->orWhere('perihal', 'like', "%{$search}%");
+                    ->orWhere('no_agenda', 'like', "%{$search}%")
+                    ->orWhere('asal_surat', 'like', "%{$search}%")
+                    ->orWhere('perihal', 'like', "%{$search}%");
             });
         }
 
@@ -48,18 +55,15 @@ class SuratMasukController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Data surat masuk berhasil diambil',
-            'data' => $surat
+            'data' => $surat,
         ]);
     }
-
 
     // =========================
     // MENAMBAHKAN SURAT
     // =========================
-    public function store(
-        StoreSuratMasukRequest $request,
-        LogAktivitasService $logService
-    ) {
+    public function store(StoreSuratMasukRequest $request)
+    {
         $data = $request->validated();
 
         $data['created_by'] = auth()->id();
@@ -73,8 +77,8 @@ class SuratMasukController extends Controller
         $surat = SuratMasuk::create($data);
 
         // Catat aktivitas
-        $logService->catat(
-            'Menambahkan surat masuk nomor "' . $surat->no_surat . '"',
+        $this->logService->catat(
+            'Menambahkan surat masuk nomor "'.$surat->no_surat.'"',
             $request,
             $surat->id
         );
@@ -85,11 +89,10 @@ class SuratMasukController extends Controller
             'data' => $surat->load([
                 'jenisSurat',
                 'sifatSurat',
-                'creator'
-            ])
+                'creator',
+            ]),
         ], 201);
     }
-
 
     // =========================
     // DETAIL SURAT
@@ -101,24 +104,31 @@ class SuratMasukController extends Controller
             'data' => $surat_masuk->load([
                 'jenisSurat',
                 'sifatSurat',
-                'creator'
-            ])
+                'creator',
+            ]),
         ]);
     }
-
 
     // =========================
     // UPDATE SURAT
     // =========================
     public function update(
         UpdateSuratMasukRequest $request,
-        SuratMasuk $surat_masuk,
-        LogAktivitasService $logService
+        SuratMasuk $surat_masuk
     ) {
         $data = $request->validated();
 
-        if ($request->hasFile('file_surat')) {
+        // Hanya admin yang boleh mengubah status surat secara manual
+        if (isset($data['status']) && ! auth()->user()->isAdmin()) {
+            unset($data['status']);
+        }
 
+        // Jangan timpa file_surat bila tidak ada file baru yang diupload
+        if (! $request->hasFile('file_surat') && array_key_exists('file_surat', $data)) {
+            unset($data['file_surat']);
+        }
+
+        if ($request->hasFile('file_surat')) {
             if (
                 $surat_masuk->file_surat &&
                 Storage::disk('public')->exists($surat_masuk->file_surat)
@@ -134,8 +144,8 @@ class SuratMasukController extends Controller
         $surat_masuk->update($data);
 
         // Catat aktivitas
-        $logService->catat(
-            'Mengubah surat masuk nomor "' . $surat_masuk->no_surat . '"',
+        $this->logService->catat(
+            'Mengubah surat masuk nomor "'.$surat_masuk->no_surat.'"',
             $request,
             $surat_masuk->id
         );
@@ -146,19 +156,16 @@ class SuratMasukController extends Controller
             'data' => $surat_masuk->fresh()->load([
                 'jenisSurat',
                 'sifatSurat',
-                'creator'
-            ])
+                'creator',
+            ]),
         ]);
     }
-
 
     // =========================
     // HAPUS SURAT
     // =========================
-    public function destroy(
-        SuratMasuk $surat_masuk,
-        LogAktivitasService $logService
-    ) {
+    public function destroy(SuratMasuk $surat_masuk)
+    {
         $idSurat = $surat_masuk->id;
         $noSurat = $surat_masuk->no_surat;
 
@@ -171,8 +178,8 @@ class SuratMasukController extends Controller
         }
 
         // Catat log SEBELUM surat dihapus
-        $logService->catat(
-            'Menghapus surat masuk nomor "' . $noSurat . '"',
+        $this->logService->catat(
+            'Menghapus surat masuk nomor "'.$noSurat.'"',
             request(),
             $idSurat
         );
@@ -181,10 +188,9 @@ class SuratMasukController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Surat masuk berhasil dihapus'
+            'message' => 'Surat masuk berhasil dihapus',
         ]);
     }
-
 
     // =========================
     // TIMELINE SURAT
@@ -194,11 +200,12 @@ class SuratMasukController extends Controller
         $timeline = LogAktivitas::with('user')
             ->where('surat_masuk_id', $surat_masuk->id)
             ->latest('created_at')
+            ->orderByDesc('id')
             ->get();
 
         return response()->json([
             'success' => true,
-            'data' => $timeline
+            'data' => $timeline,
         ]);
     }
 }
