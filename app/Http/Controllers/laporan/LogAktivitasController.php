@@ -11,11 +11,12 @@ class LogAktivitasController extends Controller
     {
         $logs = LogAktivitas::with('user')
             ->latest('created_at')
+            ->orderByDesc('id')
             ->paginate(20);
 
         return response()->json([
             'success' => true,
-            'data' => $logs
+            'data' => $logs,
         ]);
     }
 }
