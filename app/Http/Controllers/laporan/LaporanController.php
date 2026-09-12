@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Laporan;
 
+use App\Http\Controllers\Controller;
 use App\Models\SuratMasuk;
 use Illuminate\Http\Request;
 
@@ -12,7 +13,7 @@ class LaporanController extends Controller
         $query = SuratMasuk::with([
             'jenisSurat',
             'sifatSurat',
-            'creator'
+            'creator',
         ]);
 
         // Filter tanggal awal
@@ -62,7 +63,7 @@ class LaporanController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Laporan surat masuk berhasil diambil',
-            'data' => $laporan
+            'data' => $laporan,
         ]);
     }
 }

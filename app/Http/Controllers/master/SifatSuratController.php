@@ -13,7 +13,7 @@ class SifatSuratController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => SifatSurat::orderBy('nama_sifat')->get()
+            'data' => SifatSurat::orderBy('nama_sifat')->get(),
         ]);
     }
 
@@ -24,7 +24,7 @@ class SifatSuratController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Sifat surat berhasil ditambahkan',
-            'data' => $sifatSurat
+            'data' => $sifatSurat,
         ], 201);
     }
 
@@ -32,7 +32,7 @@ class SifatSuratController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $sifat_surat
+            'data' => $sifat_surat,
         ]);
     }
 
@@ -43,7 +43,7 @@ class SifatSuratController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Sifat surat berhasil diperbarui',
-            'data' => $sifat_surat
+            'data' => $sifat_surat,
         ]);
     }
 
@@ -53,7 +53,7 @@ class SifatSuratController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Sifat surat berhasil dihapus'
+            'message' => 'Sifat surat berhasil dihapus',
         ]);
     }
 }

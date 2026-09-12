@@ -13,7 +13,7 @@ class BidangController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => Bidang::orderBy('nama_bidang')->get()
+            'data' => Bidang::orderBy('nama_bidang')->get(),
         ]);
     }
 
@@ -24,7 +24,7 @@ class BidangController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Bidang berhasil ditambahkan',
-            'data' => $bidang
+            'data' => $bidang,
         ], 201);
     }
 
@@ -32,7 +32,7 @@ class BidangController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $bidang
+            'data' => $bidang,
         ]);
     }
 
@@ -43,7 +43,7 @@ class BidangController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Bidang berhasil diperbarui',
-            'data' => $bidang
+            'data' => $bidang,
         ]);
     }
 
@@ -53,7 +53,7 @@ class BidangController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Bidang berhasil dihapus'
+            'message' => 'Bidang berhasil dihapus',
         ]);
     }
 }

@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Dashboard;
 
-use App\Models\SuratMasuk;
-use App\Models\Disposisi;
-use App\Models\ArsipDigital;
-use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Models\ArsipDigital;
+use App\Models\Disposisi;
+use App\Models\SuratMasuk;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -29,9 +29,9 @@ class DashboardController extends Controller
 
         // Surat masuk per bulan
         $suratPerBulan = SuratMasuk::select(
-                DB::raw('MONTH(tanggal_terima) as bulan'),
-                DB::raw('COUNT(*) as jumlah')
-            )
+            DB::raw('MONTH(tanggal_terima) as bulan'),
+            DB::raw('COUNT(*) as jumlah')
+        )
             ->whereYear('tanggal_terima', now()->year)
             ->groupBy(DB::raw('MONTH(tanggal_terima)'))
             ->orderBy('bulan')
@@ -39,18 +39,18 @@ class DashboardController extends Controller
 
         // Surat berdasarkan jenis
         $suratBerdasarkanJenis = SuratMasuk::select(
-                'jenis_surat_id',
-                DB::raw('COUNT(*) as jumlah')
-            )
+            'jenis_surat_id',
+            DB::raw('COUNT(*) as jumlah')
+        )
             ->with('jenisSurat:id,nama_jenis')
             ->groupBy('jenis_surat_id')
             ->get();
 
         // Disposisi berdasarkan status
         $disposisiBerdasarkanStatus = Disposisi::select(
-                'status',
-                DB::raw('COUNT(*) as jumlah')
-            )
+            'status',
+            DB::raw('COUNT(*) as jumlah')
+        )
             ->groupBy('status')
             ->get();
 
@@ -73,7 +73,7 @@ class DashboardController extends Controller
                 'surat_berdasarkan_jenis' => $suratBerdasarkanJenis,
 
                 'disposisi_berdasarkan_status' => $disposisiBerdasarkanStatus,
-            ]
+            ],
         ]);
     }
 }

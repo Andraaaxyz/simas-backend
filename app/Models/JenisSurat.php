@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class JenisSurat extends Model
@@ -12,7 +11,7 @@ class JenisSurat extends Model
     ];
 
     public function suratMasuks()
-{
-    return $this->hasMany(SuratMasuk::class);
-}
+    {
+        return $this->hasMany(SuratMasuk::class);
+    }
 }

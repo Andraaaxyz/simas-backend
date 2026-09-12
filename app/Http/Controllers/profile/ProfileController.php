@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Profile;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateProfileRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use App\Http\Controllers\Controller;
 
 class ProfileController extends Controller
 {
@@ -14,13 +13,13 @@ class ProfileController extends Controller
     {
         $user = $request->user()->load([
             'role',
-            'bidang'
+            'bidang',
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Data profile berhasil diambil',
-            'data' => $user
+            'data' => $user,
         ]);
     }
 
@@ -43,8 +42,8 @@ class ProfileController extends Controller
             'message' => 'Profile berhasil diperbarui',
             'data' => $user->fresh()->load([
                 'role',
-                'bidang'
-            ])
+                'bidang',
+            ]),
         ]);
     }
 }

@@ -13,7 +13,7 @@ class JenisSuratController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => JenisSurat::orderBy('nama_jenis')->get()
+            'data' => JenisSurat::orderBy('nama_jenis')->get(),
         ]);
     }
 
@@ -24,7 +24,7 @@ class JenisSuratController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Jenis surat berhasil ditambahkan',
-            'data' => $jenisSurat
+            'data' => $jenisSurat,
         ], 201);
     }
 
@@ -32,7 +32,7 @@ class JenisSuratController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data' => $jenis_surat
+            'data' => $jenis_surat,
         ]);
     }
 
@@ -43,7 +43,7 @@ class JenisSuratController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Jenis surat berhasil diperbarui',
-            'data' => $jenis_surat
+            'data' => $jenis_surat,
         ]);
     }
 
@@ -53,7 +53,7 @@ class JenisSuratController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Jenis surat berhasil dihapus'
+            'message' => 'Jenis surat berhasil dihapus',
         ]);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Disposisi extends Model
@@ -20,17 +19,17 @@ class Disposisi extends Model
     ];
 
     public function suratMasuk()
-{
-    return $this->belongsTo(SuratMasuk::class);
-}
+    {
+        return $this->belongsTo(SuratMasuk::class);
+    }
 
-public function pengirim()
-{
-    return $this->belongsTo(User::class, 'dari_user');
-}
+    public function pengirim()
+    {
+        return $this->belongsTo(User::class, 'dari_user');
+    }
 
-public function penerima()
-{
-    return $this->belongsTo(User::class, 'kepada_user');
-}
+    public function penerima()
+    {
+        return $this->belongsTo(User::class, 'kepada_user');
+    }
 }

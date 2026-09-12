@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Notifikasi;
 
-use App\Models\Notifikasi;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Notifikasi;
 
 class NotifikasiController extends Controller
 {
@@ -16,7 +15,7 @@ class NotifikasiController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $notifikasi
+            'data' => $notifikasi,
         ]);
     }
 
@@ -29,7 +28,7 @@ class NotifikasiController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $notifikasi
+            'data' => $notifikasi,
         ]);
     }
 
@@ -38,18 +37,18 @@ class NotifikasiController extends Controller
         if ($notifikasi->user_id !== auth()->id()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Anda tidak memiliki akses ke notifikasi ini'
+                'message' => 'Anda tidak memiliki akses ke notifikasi ini',
             ], 403);
         }
 
         $notifikasi->update([
-            'is_read' => true
+            'is_read' => true,
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Notifikasi ditandai sudah dibaca',
-            'data' => $notifikasi
+            'data' => $notifikasi,
         ]);
     }
 }
