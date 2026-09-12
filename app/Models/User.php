@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Role as RoleEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -27,12 +28,24 @@ class User extends Authenticatable
         'status',
     ];
 
-    public function role() {
-    return $this->belongsTo(Role::class);
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 
-    public function bidang() {
-    return $this->belongsTo(Bidang::class);
+    public function bidang()
+    {
+        return $this->belongsTo(Bidang::class);
+    }
+
+    public function hasRole(RoleEnum $role): bool
+    {
+        return $this->role?->nama_role === $role->value;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(RoleEnum::ADMIN);
     }
 
     /**
