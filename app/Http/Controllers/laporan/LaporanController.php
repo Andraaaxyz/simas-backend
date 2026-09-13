@@ -16,6 +16,18 @@ class LaporanController extends Controller
             'creator',
         ]);
 
+        // Filter pencarian
+        if ($request->filled('search')) {
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('no_surat', 'like', "%{$search}%")
+                    ->orWhere('no_agenda', 'like', "%{$search}%")
+                    ->orWhere('asal_surat', 'like', "%{$search}%")
+                    ->orWhere('perihal', 'like', "%{$search}%");
+            });
+        }
+
         // Filter tanggal awal
         if ($request->filled('tanggal_awal')) {
             $query->whereDate(
