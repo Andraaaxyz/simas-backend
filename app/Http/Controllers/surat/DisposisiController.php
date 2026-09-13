@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Surat;
 
+use App\Enums\Role as RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDisposisiRequest;
 use App\Http\Requests\UpdateDisposisiRequest;
@@ -25,11 +26,20 @@ class DisposisiController extends Controller
     {
         $perPage = min((int) $request->query('per_page', 10), 50);
 
-        $disposisis = Disposisi::with([
+        $query = Disposisi::with([
             'suratMasuk',
             'pengirim',
             'penerima',
-        ])
+        ]);
+
+        if (
+            ! auth()->user()->isAdmin()
+            && ! auth()->user()->hasRole(RoleEnum::PIMPINAN)
+        ) {
+            $query->where('kepada_user', auth()->id());
+        }
+
+        $disposisis = $query
             ->latest()
             ->paginate($perPage)
             ->withQueryString();
