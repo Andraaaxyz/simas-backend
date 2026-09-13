@@ -24,13 +24,37 @@ class UserController extends Controller
     {
         $perPage = min((int) $request->query('per_page', 10), 50);
 
-        $users = User::with([
+        $query = User::with([
             'role',
             'bidang',
-        ])
+        ]);
+
+        if ($request->filled('role')) {
+            $query->whereHas('role', function ($q) use ($request) {
+                $q->where('nama_role', $request->query('role'));
+            });
+        }
+
+        $users = $query
             ->latest()
             ->paginate($perPage)
             ->withQueryString();
+
+        return response()->json([
+            'success' => true,
+            'data' => $users,
+        ]);
+    }
+
+    public function opsiDisposisi()
+    {
+        $users = User::whereHas('role', function ($q) {
+            $q->where('nama_role', 'Pegawai');
+        })
+            ->where('status', 'aktif')
+            ->select('id', 'nama')
+            ->orderBy('nama')
+            ->get();
 
         return response()->json([
             'success' => true,

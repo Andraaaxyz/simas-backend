@@ -26,6 +26,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // timeline
     Route::get('/surat-masuk/{surat_masuk}/timeline', [SuratMasukController::class, 'timeline']);
 
+    // daftar pegawai untuk pilihan tujuan disposisi (pimpinan)
+    Route::get('/users/opsi-disposisi', [UserController::class, 'opsiDisposisi']);
+
     // master aplikasi (hanya admin)
     Route::middleware('role:Admin')->group(function () {
         Route::apiResource('bidangs', BidangController::class);
