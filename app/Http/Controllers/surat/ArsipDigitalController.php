@@ -23,8 +23,18 @@ class ArsipDigitalController extends Controller
     {
         $perPage = min((int) $request->query('per_page', 10), 50);
 
-        $arsips = ArsipDigital::with('suratMasuk')
-            ->latest()
+        $arsips = ArsipDigital::with('suratMasuk');
+
+        // Pegawai hanya melihat arsip untuk bidangnya
+        $user = auth()->user();
+
+        if (! $user->isAdmin() && ! $user->isPimpinan()) {
+            $arsips->whereHas('suratMasuk', function ($q) use ($user) {
+                $q->untukBidang($user);
+            });
+        }
+
+        $arsips = $arsips->latest()
             ->paginate($perPage)
             ->withQueryString();
 

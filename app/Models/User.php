@@ -48,6 +48,16 @@ class User extends Authenticatable
         return $this->hasRole(RoleEnum::ADMIN);
     }
 
+    public function isPimpinan(): bool
+    {
+        return $this->hasRole(RoleEnum::PIMPINAN);
+    }
+
+    public function isPegawai(): bool
+    {
+        return $this->hasRole(RoleEnum::PEGAWAI);
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

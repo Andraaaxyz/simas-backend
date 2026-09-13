@@ -13,44 +13,73 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalSurat = SuratMasuk::count();
+        $user = auth()->user();
 
-        $suratBaru = SuratMasuk::where('status', 'baru')->count();
+        $terbatas = ! $user->isAdmin() && ! $user->isPimpinan();
 
-        $suratDidisposisi = SuratMasuk::where('status', 'didisposisi')->count();
+        $totalSurat = $terbatas
+            ? SuratMasuk::untukBidang($user)->count()
+            : SuratMasuk::count();
 
-        $suratDiarsipkan = SuratMasuk::where('status', 'diarsipkan')->count();
+        $suratBaru = $terbatas
+            ? SuratMasuk::untukBidang($user)->where('status', 'baru')->count()
+            : SuratMasuk::where('status', 'baru')->count();
 
-        $totalDisposisi = Disposisi::count();
+        $suratDidisposisi = $terbatas
+            ? SuratMasuk::untukBidang($user)->where('status', 'didisposisi')->count()
+            : SuratMasuk::where('status', 'didisposisi')->count();
 
-        $totalArsip = ArsipDigital::count();
+        $suratDiarsipkan = $terbatas
+            ? SuratMasuk::untukBidang($user)->where('status', 'diarsipkan')->count()
+            : SuratMasuk::where('status', 'diarsipkan')->count();
+
+        $totalDisposisi = $terbatas
+            ? Disposisi::where('kepada_user', $user->id)->count()
+            : Disposisi::count();
+
+        $totalArsip = $terbatas
+            ? ArsipDigital::whereHas('suratMasuk', function ($q) use ($user) {
+                $q->untukBidang($user);
+            })->count()
+            : ArsipDigital::count();
 
         $totalUser = User::count();
 
+        $suratDasar = $terbatas
+            ? SuratMasuk::untukBidang($user)
+            : SuratMasuk::query();
+
         // Surat masuk per bulan
-        $suratPerBulan = SuratMasuk::select(
-            DB::raw('MONTH(tanggal_terima) as bulan'),
-            DB::raw('COUNT(*) as jumlah')
-        )
+        $suratPerBulan = (clone $suratDasar)
+            ->select(
+                DB::raw('MONTH(tanggal_terima) as bulan'),
+                DB::raw('COUNT(*) as jumlah')
+            )
             ->whereYear('tanggal_terima', now()->year)
             ->groupBy(DB::raw('MONTH(tanggal_terima)'))
             ->orderBy('bulan')
             ->get();
 
         // Surat berdasarkan jenis
-        $suratBerdasarkanJenis = SuratMasuk::select(
-            'jenis_surat_id',
-            DB::raw('COUNT(*) as jumlah')
-        )
+        $suratBerdasarkanJenis = (clone $suratDasar)
+            ->select(
+                'jenis_surat_id',
+                DB::raw('COUNT(*) as jumlah')
+            )
             ->with('jenisSurat:id,nama_jenis')
             ->groupBy('jenis_surat_id')
             ->get();
 
+        $disposisiDasar = $terbatas
+            ? Disposisi::where('kepada_user', $user->id)
+            : Disposisi::query();
+
         // Disposisi berdasarkan status
-        $disposisiBerdasarkanStatus = Disposisi::select(
-            'status',
-            DB::raw('COUNT(*) as jumlah')
-        )
+        $disposisiBerdasarkanStatus = (clone $disposisiDasar)
+            ->select(
+                'status',
+                DB::raw('COUNT(*) as jumlah')
+            )
             ->groupBy('status')
             ->get();
 

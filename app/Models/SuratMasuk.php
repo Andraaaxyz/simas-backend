@@ -46,4 +46,16 @@ class SuratMasuk extends Model
     {
         return $this->hasMany(ArsipDigital::class);
     }
+
+    public function scopeUntukBidang($query, User $user)
+    {
+        return $query->where(function ($q) use ($user) {
+            $q->where('tujuan_surat', $user->bidang?->nama_bidang)
+                ->orWhereHas('disposisis', function ($d) use ($user) {
+                    $d->whereHas('penerima', function ($p) use ($user) {
+                        $p->where('bidang_id', $user->bidang_id);
+                    });
+                });
+        });
+    }
 }

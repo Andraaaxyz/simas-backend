@@ -48,6 +48,13 @@ class SuratMasukController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Pegawai hanya melihat surat untuk bidangnya
+        $user = auth()->user();
+
+        if (! $user->isAdmin() && ! $user->isPimpinan()) {
+            $query->untukBidang($user);
+        }
+
         $query->latest();
 
         $surat = $query->paginate(
@@ -101,6 +108,20 @@ class SuratMasukController extends Controller
     // =========================
     public function show(SuratMasuk $surat_masuk)
     {
+        $user = auth()->user();
+
+        // Pegawai hanya boleh membuka surat untuk bidangnya
+        if (
+            ! $user->isAdmin()
+            && ! $user->isPimpinan()
+            && ! SuratMasuk::untukBidang($user)->whereKey($surat_masuk->id)->exists()
+        ) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Surat tidak ditemukan',
+            ], 404);
+        }
+
         return response()->json([
             'success' => true,
             'data' => $surat_masuk->load([
