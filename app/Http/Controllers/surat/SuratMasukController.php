@@ -50,7 +50,9 @@ class SuratMasukController extends Controller
 
         $query->latest();
 
-        $surat = $query->paginate(10);
+        $surat = $query->paginate(
+            min((int) $request->query('per_page', 10), 50)
+        );
 
         return response()->json([
             'success' => true,
